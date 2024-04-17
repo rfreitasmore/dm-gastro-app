@@ -36,10 +36,10 @@ To get the project running, follow these steps:
    ```bash
    npx expo start
    ```
-  or
-  ```bash
-  npm start
-  ```
+   or
+   ```bash
+   npm start
+   ```
 
 
    These commands will start the Expo developer tools in your browser.
