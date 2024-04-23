@@ -7,7 +7,9 @@ import {
   TouchableOpacity,
   ScrollView,
   SafeAreaView,
-  FlatList
+  FlatList,
+  Modal,
+  Pressable
 } from "react-native";
 import { globalStyles, colors } from "../styles/global";
 import Map from "../components/Map";
@@ -56,7 +58,8 @@ const data = [
 ];
 
 const filterCategories = [
-  ...new Set(data.map((restaurante) => restaurante.category))
+  ...new Set(data.map((restaurante) => restaurante.category)),
+  "Todos"
 ];
 
 console.log(filterCategories);
@@ -65,11 +68,18 @@ const restauranteCategories = ["Todos", "Churrasqueira", "Petiscos"];
 
 export default function MapScreen({ navigation }) {
   const [selectedFilter, setSelectedFilter] = useState("Todos");
-  console.log(selectedFilter);
+  const [selectedRestaurant, setSelectedRestaurant] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const filteredRestaurants = data.filter(restaurant => {
+    return restaurant.category === selectedFilter || selectedFilter === "Todos"
+  });
+  console.log(filteredRestaurants);
+
   return (
     <View style={styles.container}>
       <View style={styles.containerMap}>
-        <Map restaurantes={data} />
+        <Map restaurantes={filteredRestaurants} />
         </View>
         <View style={styles.containerFilters}>
         <ScrollView
@@ -91,11 +101,19 @@ export default function MapScreen({ navigation }) {
 
       <SafeAreaView style={styles.containerList}>
         <FlatList
-          data={data}
+          data={filteredRestaurants}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <TouchableOpacity>
-              <Text>{item.name}</Text>
+            <TouchableOpacity 
+            onPress={() => {
+              setSelectedRestaurant(item)
+              setModalVisible(true);
+            }}
+            style={[
+              globalStyles.card, {
+              backgroundColor: colors.primary,
+            }]}>
+              <Text style={{color:"white"}}>{item.name}</Text>
             </TouchableOpacity>
           )}
         />
@@ -106,6 +124,27 @@ export default function MapScreen({ navigation }) {
           <Text style={styles.buttonTextStyle}>Home</Text>
         </TouchableOpacity> */}
       </SafeAreaView>
+      <View style={styles.centeredView}>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert('Modal has been closed.');
+          setModalVisible(!modalVisible);
+        }}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>{selectedRestaurant.name}</Text>
+            <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => setModalVisible(!modalVisible)}>
+              <Text style={styles.textStyle}>Hide Modal</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+    </View>
       <StatusBar style="auto" />
     </View>
   );
@@ -155,5 +194,46 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     padding:10
-  }
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF',
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+  },
 });
