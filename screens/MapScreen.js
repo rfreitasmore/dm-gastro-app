@@ -58,11 +58,11 @@ const data = [
 ];
 
 const filterCategories = [
-  ...new Set(data.map((restaurante) => restaurante.category)),
-  "Todos"
+  "Todos",
+  ...new Set(data.map((restaurante) => restaurante.category))
 ];
 
-console.log(filterCategories);
+//console.log(filterCategories);
 
 const restauranteCategories = ["Todos", "Churrasqueira", "Petiscos"];
 
@@ -74,7 +74,7 @@ export default function MapScreen({ navigation }) {
   const filteredRestaurants = data.filter(restaurant => {
     return restaurant.category === selectedFilter || selectedFilter === "Todos"
   });
-  console.log(filteredRestaurants);
+  //console.log(filteredRestaurants);
 
   return (
     <View style={styles.container}>
@@ -113,7 +113,7 @@ export default function MapScreen({ navigation }) {
               globalStyles.card, {
               backgroundColor: colors.primary,
             }]}>
-              <Text style={{color:"white"}}>{item.name}</Text>
+              <Text style={{color:"white"}}>{item?.name}</Text>
             </TouchableOpacity>
           )}
         />
@@ -124,7 +124,7 @@ export default function MapScreen({ navigation }) {
           <Text style={styles.buttonTextStyle}>Home</Text>
         </TouchableOpacity> */}
       </SafeAreaView>
-      <View style={styles.centeredView}>
+      
       <Modal
         animationType="slide"
         transparent={true}
@@ -135,7 +135,7 @@ export default function MapScreen({ navigation }) {
         }}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>{selectedRestaurant.name}</Text>
+            <Text style={styles.modalText}>{selectedRestaurant?.name}</Text>
             <Pressable
               style={[styles.button, styles.buttonClose]}
               onPress={() => setModalVisible(!modalVisible)}>
@@ -144,7 +144,7 @@ export default function MapScreen({ navigation }) {
           </View>
         </View>
       </Modal>
-    </View>
+   
       <StatusBar style="auto" />
     </View>
   );
@@ -174,8 +174,8 @@ const styles = StyleSheet.create({
   containerMap: {
     flex: 0.6,
     width: "100%",
-    borderColor: "red",
-    borderWidth: 2,
+    // borderColor: "red",
+    // borderWidth: 2,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
   modalView: {
     margin: 20,
     backgroundColor: 'white',
-    borderRadius: 20,
+    borderRadius: 10,
     padding: 35,
     alignItems: 'center',
     shadowColor: '#000',
@@ -215,9 +215,25 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+    opacity: 0.9,
+    width: "90%",
+    height: "70%",
   },
-  button: {
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+    color: '#333',
+    fontSize: 16,
+  },
+  closeButton: {
+    backgroundColor: '#43806c',
     borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+
+  button: {
+    borderRadius: 10,
     padding: 10,
     elevation: 2,
   },
@@ -225,7 +241,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#F194FF',
   },
   buttonClose: {
-    backgroundColor: '#2196F3',
+    position: 'absolute',
+    bottom: 35,
+    justifyContent:"center",
+    backgroundColor: '#FFA500',
+    padding: 20,
+    borderRadius: 10,
+    alignSelf: 'center',
+
   },
   textStyle: {
     color: 'white',
