@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StatusBar,
   StyleSheet,
@@ -9,58 +9,17 @@ import {
   SafeAreaView,
   FlatList,
   Modal,
-  Pressable
+  Pressable,
+  Image,
 } from "react-native";
 import { globalStyles, colors } from "../styles/global";
+import AntDesign from "react-native-vector-icons/AntDesign";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Map from "../components/Map";
 
-const data = [
-  {
-    id: 1,
-    name: "Restaurante 1",
-    latitude: 41.805827,
-    longitude: -6.757289,
-    description: "Aqui vai uma descrição do restaurante",
-    category: "Tradicional",
-  },
-  {
-    id: 2,
-    name: "Churrasqueira 1",
-    latitude: 41.815817,
-    longitude: -6.757189,
-    description: "Aqui vai uma descrição do restaurante",
-    category: "Churrasqueira",
-  },
-  {
-    id: 3,
-    name: "Churrasqueira 3",
-    latitude: 41.814817,
-    longitude: -6.777189,
-    description: "Aqui vai uma descrição do restaurante",
-    category: "Churrasqueira",
-  },
-  {
-    id: 4,
-    name: "Tasca do Zé",
-    latitude: 41.815817,
-    longitude: -6.787189,
-    description: "Aqui vai uma descrição do restaurante",
-    category: "Petiscos",
-  },
-  {
-    id: 5,
-    name: "Sabor na brasa",
-    latitude: 41.795817,
-    longitude: -6.737189,
-    description: "Aqui vai uma descrição do restaurante",
-    category: "Churrasqueira",
-  },
-];
-
-const filterCategories = [
-  "Todos",
-  ...new Set(data.map((restaurante) => restaurante.category))
-];
+import restaurantData from "../data/restaurantData.js";
+import { RestaurantModal } from "../components/RestaurantModal.js";
 
 //console.log(filterCategories);
 
@@ -70,18 +29,46 @@ export default function MapScreen({ navigation }) {
   const [selectedFilter, setSelectedFilter] = useState("Todos");
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [data, setData] = useState([]);
 
-  const filteredRestaurants = data.filter(restaurant => {
-    return restaurant.category === selectedFilter || selectedFilter === "Todos"
+  const filteredRestaurants = data.filter((restaurant) => {
+    return restaurant.category === selectedFilter || selectedFilter === "Todos";
   });
   //console.log(filteredRestaurants);
+
+  const filterCategories = [
+    "Todos",
+    ...new Set(data?.map((restaurante) => restaurante.category)),
+  ];
+
+  const convertFilterIcon = (filter) => {
+    switch (filter) {
+      case "Todos":
+        return <MaterialIcons name="restaurant" size={20} />;
+      case "Churrasqueira":
+        return <MaterialIcons name="outdoor-grill" size={20} />;
+      case "Petiscos":
+        return <MaterialCommunityIcons name="food-hot-dog" size={20} />;
+      default:
+        return <MaterialIcons name="restaurant" size={20} />;
+    }
+  };
+
+  useEffect(() => {
+    fetchRestaurantData();
+  }, []);
+
+  const fetchRestaurantData = () => {
+    console.log("fetching data");
+    setData(restaurantData);
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.containerMap}>
         <Map restaurantes={filteredRestaurants} />
-        </View>
-        <View style={styles.containerFilters}>
+      </View>
+      <View style={styles.containerFilters}>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -90,10 +77,36 @@ export default function MapScreen({ navigation }) {
           {filterCategories.map((filter) => (
             <TouchableOpacity
               key={filter}
-              style={styles.buttonStyle}
+              style={[
+                styles.buttonStyle,
+                selectedFilter === filter
+                  ? { backgroundColor: colors.secondary }
+                  : null,
+              ]}
               onPress={() => setSelectedFilter(filter)}
             >
-              <Text style={styles.filterText}>{filter}</Text>
+              <View
+                style={[
+                  styles.filterText,
+                  selectedFilter === filter ? { color: "white" } : null,
+                ]}
+              >
+                <Text
+                  style={[
+                    { marginRight: 10 },
+                    selectedFilter === filter ? { color: "white" } : null,
+                  ]}
+                >
+                  {convertFilterIcon(filter)}
+                </Text>
+                <Text
+                  style={[
+                    selectedFilter === filter ? { color: "white" } : {color: colors.secondary},
+                  ]}
+                >
+                  {filter}
+                </Text>
+              </View>
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -104,47 +117,40 @@ export default function MapScreen({ navigation }) {
           data={filteredRestaurants}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <TouchableOpacity 
-            onPress={() => {
-              setSelectedRestaurant(item)
-              setModalVisible(true);
-            }}
-            style={[
-              globalStyles.card, {
-              backgroundColor: colors.primary,
-            }]}>
-              <Text style={{color:"white"}}>{item?.name}</Text>
+            <TouchableOpacity
+              onPress={() => {
+                setSelectedRestaurant(item);
+                setModalVisible(true);
+              }}
+              style={[
+                globalStyles.card,
+                {
+                  backgroundColor: colors.primary,
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                },
+              ]}
+            >
+              <Text style={[colors.secondary, { fontSize: 18 }]}>
+                {item?.name}
+              </Text>
+              <Text style={{ color: "white" }}>
+                {item?.rating}{" "}
+                <AntDesign name="star" size={16} color={colors.secondary} />
+              </Text>
             </TouchableOpacity>
           )}
         />
-        {/* <TouchableOpacity
-          style={globalStyles.buttonStyle}
-          onPress={() => navigation.navigate("Home")}
-        >
-          <Text style={styles.buttonTextStyle}>Home</Text>
-        </TouchableOpacity> */}
       </SafeAreaView>
-      
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          Alert.alert('Modal has been closed.');
-          setModalVisible(!modalVisible);
-        }}>
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>{selectedRestaurant?.name}</Text>
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => setModalVisible(!modalVisible)}>
-              <Text style={styles.textStyle}>Hide Modal</Text>
-            </Pressable>
-          </View>
-        </View>
-      </Modal>
-   
+
+      <RestaurantModal
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        selectedRestaurant={selectedRestaurant}
+        navigation={navigation}
+      />
+
       <StatusBar style="auto" />
     </View>
   );
@@ -164,24 +170,26 @@ const styles = StyleSheet.create({
   buttonStyle: {
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
     marginHorizontal: 5,
     backgroundColor: "#ddd",
     borderRadius: 5,
-    width: 200,
+    width: 150,
   },
   containerMap: {
     flex: 0.6,
     width: "100%",
-    // borderColor: "red",
-    // borderWidth: 2,
     alignItems: "center",
     justifyContent: "center",
   },
   containerFilters: {
     flex: 0.1,
     width: "100%",
+  },
+  modalImage: {
+    width: "100%",
+    height: 200,
+    marginBottom: 10,
+    resizeMode: "cover",
   },
   filtersContentContainer: {
     alignItems: "center",
@@ -193,21 +201,21 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   scrollView: {
-    padding:10
+    padding: 10,
   },
   centeredView: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 22,
   },
   modalView: {
     margin: 20,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 10,
     padding: 35,
-    alignItems: 'center',
-    shadowColor: '#000',
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
@@ -221,12 +229,12 @@ const styles = StyleSheet.create({
   },
   modalText: {
     marginBottom: 15,
-    textAlign: 'center',
-    color: '#333',
+    textAlign: "center",
+    color: "#333",
     fontSize: 16,
   },
   closeButton: {
-    backgroundColor: '#43806c',
+    backgroundColor: "#43806c",
     borderRadius: 20,
     padding: 10,
     elevation: 2,
@@ -238,25 +246,30 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   buttonOpen: {
-    backgroundColor: '#F194FF',
+    backgroundColor: "#F194FF",
   },
   buttonClose: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 35,
-    justifyContent:"center",
-    backgroundColor: '#FFA500',
+    justifyContent: "center",
+    backgroundColor: "#FFA500",
     padding: 20,
     borderRadius: 10,
-    alignSelf: 'center',
-
+    alignSelf: "center",
   },
   textStyle: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
   },
   modalText: {
     marginBottom: 15,
-    textAlign: 'center',
+    textAlign: "center",
+  },
+  filterText: {
+    fontSize: 16,
+    justifyContent: "space-between",
+    display: "flex",
+    flexDirection: "row",
   },
 });

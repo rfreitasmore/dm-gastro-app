@@ -5,6 +5,7 @@ import HomeScreen from "./screens/HomeScreen";
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MapScreen from "./screens/MapScreen";
+import RestaurantDetailsScreen from "./screens/RestaurantDetailsScreen";
 
 
 const Stack = createNativeStackNavigator();
@@ -16,6 +17,7 @@ function App() {
       <Stack.Navigator initialRouteName="Home">
         <Stack.Screen name="Home" component={HomeScreen} />   
         <Stack.Screen name="Mapa" component={MapScreen} />
+        <Stack.Screen name="Detalhes" component={RestaurantDetailsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
