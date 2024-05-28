@@ -17,6 +17,7 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Map from "../components/Map";
+import { fetchRestaurants } from "../api/restaurants.js";
 
 import restaurantData from "../data/restaurantData.js";
 import { RestaurantModal } from "../components/RestaurantModal.js";
@@ -58,8 +59,15 @@ export default function MapScreen({ navigation }) {
     fetchRestaurantData();
   }, []);
 
-  const fetchRestaurantData = () => {
+  const fetchRestaurantData = async () => {
     console.log("fetching data");
+    try{
+      const restaurantResponse = await fetchRestaurants();
+      console.log("dados do fetch", restaurantResponse)
+    } catch (error){
+      console.log("erro no fetch restaurants")
+    }
+
     setData(restaurantData);
   };
 

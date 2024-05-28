@@ -6,20 +6,31 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MapScreen from "./screens/MapScreen";
 import RestaurantDetailsScreen from "./screens/RestaurantDetailsScreen";
-
+import RegisterRestaurantScreen from "./screens/RegisterRestaurantScreen";
+import RestaurantListScreen from "./screens/RestaurantListScreen";
+import { ThemeProvider } from "./context/ThemeContext";
+import ToggleTheme from "./components/ToggleTheme";
 
 const Stack = createNativeStackNavigator();
 
-
 function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="Home" component={HomeScreen} />   
-        <Stack.Screen name="Mapa" component={MapScreen} />
-        <Stack.Screen name="Detalhes" component={RestaurantDetailsScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <ThemeProvider>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName="Home"
+          screenOptions={{
+            headerRight: () => <ToggleTheme />,
+          }}
+        >
+          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="Mapa" component={MapScreen} />
+          <Stack.Screen name="Detalhes" component={RestaurantDetailsScreen} />
+          <Stack.Screen name="Registar" component={RegisterRestaurantScreen} />
+          <Stack.Screen name="Listar" component={RestaurantListScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </ThemeProvider>
   );
 }
 
