@@ -11,6 +11,10 @@ import RestaurantListScreen from "./screens/RestaurantListScreen";
 import { ThemeProvider } from "./context/ThemeContext";
 import ToggleTheme from "./components/ToggleTheme";
 
+import LoginScreen from "./screens/LoginScreen";
+import UserRegisterScreen from "./screens/UserRegisterScreen";
+
+
 const Stack = createNativeStackNavigator();
 
 function App() {
@@ -24,6 +28,8 @@ function App() {
           }}
         >
           <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="Login" component={LoginScreen} />
+         <Stack.Screen name="Register" component={UserRegisterScreen} />
           <Stack.Screen name="Mapa" component={MapScreen} />
           <Stack.Screen name="Detalhes" component={RestaurantDetailsScreen} />
           <Stack.Screen name="Registar" component={RegisterRestaurantScreen} />
